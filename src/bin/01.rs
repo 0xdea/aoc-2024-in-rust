@@ -31,7 +31,7 @@ fn main() -> Result<()> {
         for line in reader.lines() {
             let line = line?;
             let parts: Vec<&str> = line.split_whitespace().collect();
-            assert!(parts.len() == 2);
+            assert_eq!(parts.len(), 2);
             v1.push(parts[0].parse()?);
             v2.push(parts[1].parse()?);
         }
@@ -66,7 +66,7 @@ fn main() -> Result<()> {
         for line in reader.lines() {
             let line = line?;
             let parts: Vec<&str> = line.split_whitespace().collect();
-            assert!(parts.len() == 2);
+            assert_eq!(parts.len(), 2);
             v1.push(parts[0].parse()?);
             v2.push(parts[1].parse()?);
         }
