@@ -11,3 +11,11 @@ const_format = "0.2.33"
 # Additional recommended dependencies
 itertools = "0.13.0"
 regex = "1.11.1"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+wildcard_imports = "allow"
+items_after_statements = "allow"

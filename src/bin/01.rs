@@ -2,7 +2,6 @@ use adv_code_2024::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use itertools::Itertools;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -32,17 +31,15 @@ fn main() -> Result<()> {
         for line in reader.lines() {
             let line = line?;
             let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() != 2 {
-                panic!();
-            }
+            assert!(parts.len() == 2);
             let n1: i32 = parts[0].parse()?;
             let n2: i32 = parts[1].parse()?;
             v1.push(n1);
             v2.push(n2);
         }
 
-        v1.sort();
-        v2.sort();
+        v1.sort_unstable();
+        v2.sort_unstable();
 
         let answer = v1
             .iter()
@@ -57,7 +54,7 @@ fn main() -> Result<()> {
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
-    println!("Result = {}", result);
+    println!("Result = {result}");
     // Result = 2066446
     //endregion
 
@@ -71,20 +68,17 @@ fn main() -> Result<()> {
         for line in reader.lines() {
             let line = line?;
             let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() != 2 {
-                panic!();
-            }
-            let n1: i32 = parts[0].parse()?;
-            let n2: i32 = parts[1].parse()?;
+            assert!(parts.len() == 2);
+            let n1: usize = parts[0].parse()?;
+            let n2: usize = parts[1].parse()?;
             v1.push(n1);
             v2.push(n2);
         }
 
         let counts = count_occurrences(&v1, &v2);
-
-        let answer = v1.iter().fold(0, |acc, &x| {
-            acc + x as usize * counts.get(&x).unwrap_or(&0usize)
-        });
+        let answer = v1
+            .iter()
+            .fold(0, |acc, &x| acc + x * counts.get(&x).unwrap());
 
         Ok(answer)
     }
@@ -93,13 +87,13 @@ fn main() -> Result<()> {
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
-    println!("Result = {}", result);
+    println!("Result = {result}");
     Ok(())
     // Result = 24931009
     //endregion
 }
 
-fn count_occurrences(v1: &Vec<i32>, v2: &Vec<i32>) -> HashMap<i32, usize> {
+fn count_occurrences(v1: &[usize], v2: &[usize]) -> HashMap<usize, usize> {
     let mut counts = HashMap::new();
     for &n in v1 {
         let count = v2.iter().filter(|&&x| x == n).count();

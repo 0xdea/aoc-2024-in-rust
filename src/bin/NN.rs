@@ -20,7 +20,7 @@ fn main() -> Result<()> {
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
         // TODO: Solve Part 1 of the puzzle
-        let answer = reader.lines().flatten().count();
+        let answer = reader.lines().count();
         Ok(answer)
     }
 
@@ -29,7 +29,7 @@ fn main() -> Result<()> {
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
-    println!("Result = {}", result);
+    println!("Result = {result}");
     //endregion
 
     //region Part 2
@@ -44,7 +44,7 @@ fn main() -> Result<()> {
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
-    println!("Result = {}", result);
+    println!("Result = {result}");
     */
     //endregion
 
