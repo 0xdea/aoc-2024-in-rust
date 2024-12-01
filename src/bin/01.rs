@@ -25,17 +25,15 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<i32> {
-        let mut v1 = vec![];
-        let mut v2 = vec![];
+        let mut v1: Vec<i32> = vec![];
+        let mut v2: Vec<i32> = vec![];
 
         for line in reader.lines() {
             let line = line?;
             let parts: Vec<&str> = line.split_whitespace().collect();
             assert!(parts.len() == 2);
-            let n1: i32 = parts[0].parse()?;
-            let n2: i32 = parts[1].parse()?;
-            v1.push(n1);
-            v2.push(n2);
+            v1.push(parts[0].parse()?);
+            v2.push(parts[1].parse()?);
         }
 
         v1.sort_unstable();
@@ -62,17 +60,15 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let mut v1 = vec![];
-        let mut v2 = vec![];
+        let mut v1: Vec<usize> = vec![];
+        let mut v2: Vec<usize> = vec![];
 
         for line in reader.lines() {
             let line = line?;
             let parts: Vec<&str> = line.split_whitespace().collect();
             assert!(parts.len() == 2);
-            let n1: usize = parts[0].parse()?;
-            let n2: usize = parts[1].parse()?;
-            v1.push(n1);
-            v2.push(n2);
+            v1.push(parts[0].parse()?);
+            v2.push(parts[1].parse()?);
         }
 
         let counts = count_occurrences(&v1, &v2);
