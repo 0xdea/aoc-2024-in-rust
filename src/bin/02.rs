@@ -76,7 +76,6 @@ fn main() -> Result<()> {
                 for i in 1..v.len() {
                     let (left, right) = v.split_at(i);
                     let v2 = [left, &right[1..right.len()]].concat();
-                    dbg!(&v2);
                     if is_safe(&v2) {
                         answer += 1;
                         continue 'x;
@@ -95,24 +94,13 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
+    // Result = 658
     //endregion
 
     Ok(())
 }
 
 fn is_safe(v: &[i32]) -> bool {
-    if !v.is_sorted() && !v.iter().rev().is_sorted() {
-        return false;
-    }
-    for w in v.windows(2) {
-        if (w[0] - w[1]).abs() > 3 || (w[0] == w[1]) {
-            return false;
-        }
-    }
-    true
-}
-
-fn is_safe2(v: &[i32]) -> bool {
     if !v.is_sorted() && !v.iter().rev().is_sorted() {
         return false;
     }
