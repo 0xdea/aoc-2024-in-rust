@@ -26,7 +26,7 @@ fn main() -> Result<()> {
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
 
-        'x: for line in reader.lines() {
+        for line in reader.lines() {
             let line = line?;
 
             let v: Vec<i32> = line
@@ -35,14 +35,8 @@ fn main() -> Result<()> {
                 .map(|s| s.parse().expect("invalid number"))
                 .collect();
 
-            if !v.is_sorted() && !v.iter().rev().is_sorted() {
+            if !is_safe(&v) {
                 continue;
-            }
-
-            for w in v.windows(2) {
-                if (w[0] - w[1]).abs() > 3 || (w[0] == w[1]) {
-                    continue 'x;
-                }
             }
             answer += 1;
         }
@@ -55,23 +49,77 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
     println!("Result = {result}");
+    // Result = 624
     //endregion
 
     //region Part 2
-    /*
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        Ok(0)
+        let mut answer = 0;
+        let mut flag = false;
+
+        'x: for line in reader.lines() {
+            let line = line?;
+
+            let v: Vec<i32> = line
+                .trim()
+                .split_whitespace()
+                .map(|s| s.parse().expect("invalid number"))
+                .collect();
+
+            if !is_safe(&v) {
+                if is_safe(&v[1..v.len()]) {
+                    answer += 1;
+                    continue 'x;
+                }
+                for i in 1..v.len() {
+                    let (left, right) = v.split_at(i);
+                    let v2 = [left, &right[1..right.len()]].concat();
+                    dbg!(&v2);
+                    if is_safe(&v2) {
+                        answer += 1;
+                        continue 'x;
+                    }
+                }
+                continue 'x;
+            }
+            answer += 1;
+        }
+
+        Ok(answer)
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(4, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
-    */
     //endregion
 
     Ok(())
+}
+
+fn is_safe(v: &[i32]) -> bool {
+    if !v.is_sorted() && !v.iter().rev().is_sorted() {
+        return false;
+    }
+    for w in v.windows(2) {
+        if (w[0] - w[1]).abs() > 3 || (w[0] == w[1]) {
+            return false;
+        }
+    }
+    true
+}
+
+fn is_safe2(v: &[i32]) -> bool {
+    if !v.is_sorted() && !v.iter().rev().is_sorted() {
+        return false;
+    }
+    for w in v.windows(2) {
+        if (w[0] - w[1]).abs() > 3 || (w[0] == w[1]) {
+            return false;
+        }
+    }
+    true
 }
