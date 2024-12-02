@@ -30,15 +30,13 @@ fn main() -> Result<()> {
             let line = line?;
 
             let v: Vec<i32> = line
-                .trim()
                 .split_whitespace()
                 .map(|s| s.parse().expect("invalid number"))
                 .collect();
 
-            if !is_safe(&v) {
-                continue;
+            if is_safe(&v) {
+                answer += 1;
             }
-            answer += 1;
         }
 
         Ok(answer)
@@ -57,33 +55,18 @@ fn main() -> Result<()> {
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
-        let mut flag = false;
 
-        'x: for line in reader.lines() {
+        for line in reader.lines() {
             let line = line?;
 
             let v: Vec<i32> = line
-                .trim()
                 .split_whitespace()
                 .map(|s| s.parse().expect("invalid number"))
                 .collect();
 
-            if !is_safe(&v) {
-                if is_safe(&v[1..v.len()]) {
-                    answer += 1;
-                    continue 'x;
-                }
-                for i in 1..v.len() {
-                    let (left, right) = v.split_at(i);
-                    let v2 = [left, &right[1..right.len()]].concat();
-                    if is_safe(&v2) {
-                        answer += 1;
-                        continue 'x;
-                    }
-                }
-                continue 'x;
+            if is_safe(&v) || is_safe2(&v) {
+                answer += 1;
             }
-            answer += 1;
         }
 
         Ok(answer)
@@ -110,4 +93,19 @@ fn is_safe(v: &[i32]) -> bool {
         }
     }
     true
+}
+
+// brute force approach;)
+fn is_safe2(v: &[i32]) -> bool {
+    if is_safe(&v[1..v.len()]) {
+        return true;
+    }
+    for i in 1..v.len() {
+        let (left, right) = v.split_at(i);
+        let v2 = [left, &right[1..right.len()]].concat();
+        if is_safe(&v2) {
+            return true;
+        }
+    }
+    false
 }
