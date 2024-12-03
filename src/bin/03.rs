@@ -12,10 +12,12 @@ const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 const TEST: &str = "\
 xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
 ";
-
 const TEST2: &str = "\
 xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
 ";
+
+const RE: &str = r"mul\((\d+),(\d+)\)";
+const RE_ANCHORED: &str = r"^mul\((\d+),(\d+)\)";
 
 fn main() -> Result<()> {
     start_day(DAY);
@@ -23,18 +25,17 @@ fn main() -> Result<()> {
     //region Part 1
     println!("=== Part 1 ===");
 
-    fn part1<R: BufRead>(reader: R) -> Result<i32> {
+    fn part1<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
+        let re = Regex::new(RE).unwrap();
 
         for line in reader.lines() {
             let line = line?;
-            let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+
             let caps = re.captures_iter(&line);
-
             for cap in caps {
-                let x = cap.get(1).unwrap().as_str().parse::<i32>().unwrap();
-                let y = cap.get(2).unwrap().as_str().parse::<i32>().unwrap();
-
+                let x = cap.get(1).unwrap().as_str().parse::<usize>().unwrap();
+                let y = cap.get(2).unwrap().as_str().parse::<usize>().unwrap();
                 answer += x * y;
             }
         }
@@ -53,10 +54,10 @@ fn main() -> Result<()> {
     //region Part 2
     println!("\n=== Part 2 ===");
 
-    fn part2<R: BufRead>(mut reader: R) -> Result<usize> {
+    fn part2<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
         let mut enabled = true;
-        let re = Regex::new(r"^mul\((\d+),(\d+)\)").unwrap();
+        let re = Regex::new(RE_ANCHORED).unwrap();
 
         for line in reader.lines() {
             let line = line?;
@@ -66,7 +67,7 @@ fn main() -> Result<()> {
                     enabled = false;
                 } else if line[i..].starts_with(r"do()") {
                     enabled = true;
-                } else if enabled {
+                } else if line[i..].starts_with(r"mul(") && enabled {
                     if let Some(cap) = re.captures(&line[i..]) {
                         let x = cap.get(1).unwrap().as_str().parse::<usize>().unwrap();
                         let y = cap.get(2).unwrap().as_str().parse::<usize>().unwrap();
