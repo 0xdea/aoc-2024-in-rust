@@ -26,16 +26,16 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
+        let re = Regex::new(RE)?;
         let mut answer = 0;
-        let re = Regex::new(RE).unwrap();
 
         for line in reader.lines() {
             let line = line?;
 
             let caps = re.captures_iter(&line);
             for cap in caps {
-                let x = cap.get(1).unwrap().as_str().parse::<usize>().unwrap();
-                let y = cap.get(2).unwrap().as_str().parse::<usize>().unwrap();
+                let x: usize = cap.get(1).unwrap().as_str().parse()?;
+                let y: usize = cap.get(2).unwrap().as_str().parse()?;
                 answer += x * y;
             }
         }
@@ -55,9 +55,9 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
+        let re = Regex::new(RE_ANCHORED)?;
         let mut answer = 0;
         let mut enabled = true;
-        let re = Regex::new(RE_ANCHORED).unwrap();
 
         for line in reader.lines() {
             let line = line?;
@@ -69,8 +69,8 @@ fn main() -> Result<()> {
                     enabled = true;
                 } else if line[i..].starts_with(r"mul(") && enabled {
                     if let Some(cap) = re.captures(&line[i..]) {
-                        let x = cap.get(1).unwrap().as_str().parse::<usize>().unwrap();
-                        let y = cap.get(2).unwrap().as_str().parse::<usize>().unwrap();
+                        let x: usize = cap.get(1).unwrap().as_str().parse()?;
+                        let y: usize = cap.get(2).unwrap().as_str().parse()?;
                         answer += x * y;
                     }
                 }
