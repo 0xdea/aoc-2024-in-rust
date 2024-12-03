@@ -56,23 +56,22 @@ fn main() -> Result<()> {
     fn part2<R: BufRead>(mut reader: R) -> Result<usize> {
         let mut answer = 0;
         let mut enabled = true;
-        let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+        let re = Regex::new(r"^mul\((\d+),(\d+)\)").unwrap();
 
-        let mut input = String::new();
-        reader
-            .read_to_string(&mut input)
-            .expect("error reading input");
+        for line in reader.lines() {
+            let line = line?;
 
-        for i in 0..input.len() {
-            if input[i..].starts_with(r"don't()") {
-                enabled = false;
-            } else if input[i..].starts_with(r"do()") {
-                enabled = true;
-            } else if input[i..].starts_with(r"mul(") && enabled {
-                if let Some(cap) = re.captures(&input[i..]) {
-                    let x = cap.get(1).unwrap().as_str().parse::<usize>().unwrap();
-                    let y = cap.get(2).unwrap().as_str().parse::<usize>().unwrap();
-                    answer += x * y;
+            for i in 0..line.len() {
+                if line[i..].starts_with(r"don't()") {
+                    enabled = false;
+                } else if line[i..].starts_with(r"do()") {
+                    enabled = true;
+                } else if enabled {
+                    if let Some(cap) = re.captures(&line[i..]) {
+                        let x = cap.get(1).unwrap().as_str().parse::<usize>().unwrap();
+                        let y = cap.get(2).unwrap().as_str().parse::<usize>().unwrap();
+                        answer += x * y;
+                    }
                 }
             }
         }
@@ -85,6 +84,7 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
+    // Result = 80747545
     //endregion
 
     Ok(())
