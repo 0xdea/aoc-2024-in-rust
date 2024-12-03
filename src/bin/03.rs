@@ -2,6 +2,7 @@ use adv_code_2024::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
+use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -9,8 +10,8 @@ const DAY: &str = "03";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 
 const TEST: &str = "\
-<TEST-INPUT>
-"; // TODO: Add the test input
+xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
+";
 
 fn main() -> Result<()> {
     start_day(DAY);
@@ -18,14 +19,33 @@ fn main() -> Result<()> {
     //region Part 1
     println!("=== Part 1 ===");
 
-    fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        // TODO: Solve Part 1 of the puzzle
-        let answer = reader.lines().count();
+    fn part1<R: BufRead>(reader: R) -> Result<i32> {
+        let mut answer = 0;
+
+        for line in reader.lines() {
+            let line = line?;
+            let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
+            let caps = re.captures_iter(&line);
+
+            for cap in caps {
+                let x = cap.get(1).unwrap().as_str().parse::<i32>().unwrap();
+                let y = cap.get(2).unwrap().as_str().parse::<i32>().unwrap();
+
+                answer += x * y;
+            }
+        }
+
+        /*
+        match x * y {
+            0 => Ok(0),
+            _ => Ok(x * y),
+        }
+         */
+
         Ok(answer)
     }
 
-    // TODO: Set the expected answer for the test input
-    assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(161, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
