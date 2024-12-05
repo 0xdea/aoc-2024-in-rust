@@ -2,7 +2,6 @@ use adv_code_2024::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use itertools::Itertools;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -57,12 +56,10 @@ fn main() -> Result<()> {
 
             if line.trim().is_empty() {
                 reading_pages = true;
+            } else if reading_pages {
+                pages.push(line);
             } else {
-                if reading_pages {
-                    pages.push(line);
-                } else {
-                    rules.push(line);
-                }
+                rules.push(line);
             }
         }
 
@@ -100,12 +97,10 @@ fn main() -> Result<()> {
 
             if line.trim().is_empty() {
                 reading_pages = true;
+            } else if reading_pages {
+                pages.push(line);
             } else {
-                if reading_pages {
-                    pages.push(line);
-                } else {
-                    rules.push(line);
-                }
+                rules.push(line);
             }
         }
 
@@ -149,7 +144,7 @@ fn is_correct_order(pages: &[usize], rules: &[String]) -> bool {
     for (i, page) in pages.iter().enumerate() {
         for j in 0..i {
             let test = format!("{page}|{}", pages.get(j).unwrap());
-            if rules.contains(&&test) {
+            if rules.contains(&test) {
                 return false;
             }
         }
