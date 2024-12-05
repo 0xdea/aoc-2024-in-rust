@@ -2,6 +2,7 @@ use adv_code_2024::*;
 use anyhow::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
+use itertools::Itertools;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -9,8 +10,35 @@ const DAY: &str = "05";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 
 const TEST: &str = "\
-<TEST-INPUT>
-"; // TODO: Add the test input
+47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47
+";
 
 fn main() -> Result<()> {
     start_day(DAY);
@@ -19,13 +47,47 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        // TODO: Solve Part 1 of the puzzle
-        let answer = reader.lines().count();
+        let mut answer = 0;
+        let mut rules_lines = vec![];
+        let mut pages_lines = vec![];
+        let mut reading_pages = false;
+
+        for line in reader.lines() {
+            let line = line?;
+
+            if line.trim().is_empty() {
+                reading_pages = true;
+            } else {
+                if reading_pages {
+                    pages_lines.push(line);
+                } else {
+                    rules_lines.push(line);
+                }
+            }
+        }
+
+        'x: for line in pages_lines {
+            let pages: Vec<usize> = line.split(',').map(|x| x.parse().unwrap()).collect();
+
+            for (i, page) in pages.iter().enumerate() {
+                for j in 0..i {
+                    let tmp = pages.get(j).unwrap();
+                    let test = format!("{page}|{tmp}");
+                    if rules_lines.contains(&test) {
+                        continue 'x;
+                    }
+                }
+            }
+
+            let mid = pages.get(pages.len() / 2).unwrap();
+            answer += mid;
+        }
+
         Ok(answer)
     }
 
     // TODO: Set the expected answer for the test input
-    assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(143, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
@@ -49,4 +111,8 @@ fn main() -> Result<()> {
     //endregion
 
     Ok(())
+}
+
+fn is_correct() {
+    todo!();
 }
