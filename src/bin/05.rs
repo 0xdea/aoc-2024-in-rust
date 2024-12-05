@@ -49,7 +49,7 @@ fn main() -> Result<()> {
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
         let mut rules = vec![];
-        let mut pages_lines = vec![];
+        let mut pages = vec![];
         let mut reading_pages = false;
 
         for line in reader.lines() {
@@ -59,14 +59,14 @@ fn main() -> Result<()> {
                 reading_pages = true;
             } else {
                 if reading_pages {
-                    pages_lines.push(line);
+                    pages.push(line);
                 } else {
                     rules.push(line);
                 }
             }
         }
 
-        for line in pages_lines {
+        for line in pages {
             let pages: Vec<usize> = line.split(',').map(|x| x.parse().unwrap()).collect();
 
             if is_correct_order(&pages, &rules) {
@@ -92,7 +92,7 @@ fn main() -> Result<()> {
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
         let mut rules = vec![];
-        let mut pages_lines = vec![];
+        let mut pages = vec![];
         let mut reading_pages = false;
 
         for line in reader.lines() {
@@ -102,14 +102,14 @@ fn main() -> Result<()> {
                 reading_pages = true;
             } else {
                 if reading_pages {
-                    pages_lines.push(line);
+                    pages.push(line);
                 } else {
                     rules.push(line);
                 }
             }
         }
 
-        for line in pages_lines {
+        for line in pages {
             let mut pages: Vec<usize> = line.split(',').map(|x| x.parse().unwrap()).collect();
 
             if !is_correct_order(&pages, &rules) {
@@ -118,8 +118,8 @@ fn main() -> Result<()> {
                 while swapped {
                     swapped = false;
                     for i in 0..pages.len() - 1 {
-                        let tmp = format!("{}|{}", pages[i + 1], pages[i]);
-                        if rules.contains(&tmp) {
+                        let test = format!("{}|{}", pages[i + 1], pages[i]);
+                        if rules.contains(&test) {
                             pages.swap(i, i + 1);
                             swapped = true;
                         }
@@ -148,8 +148,7 @@ fn main() -> Result<()> {
 fn is_correct_order(pages: &[usize], rules: &[String]) -> bool {
     for (i, page) in pages.iter().enumerate() {
         for j in 0..i {
-            let tmp = pages.get(j).unwrap();
-            let test = format!("{page}|{tmp}");
+            let test = format!("{page}|{}", pages.get(j).unwrap());
             if rules.contains(&&test) {
                 return false;
             }
