@@ -48,7 +48,7 @@ fn main() -> Result<()> {
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
-        let mut rules_lines = vec![];
+        let mut rules = vec![];
         let mut pages_lines = vec![];
         let mut reading_pages = false;
 
@@ -61,58 +61,99 @@ fn main() -> Result<()> {
                 if reading_pages {
                     pages_lines.push(line);
                 } else {
-                    rules_lines.push(line);
+                    rules.push(line);
                 }
             }
         }
 
-        'x: for line in pages_lines {
+        for line in pages_lines {
             let pages: Vec<usize> = line.split(',').map(|x| x.parse().unwrap()).collect();
 
-            for (i, page) in pages.iter().enumerate() {
-                for j in 0..i {
-                    let tmp = pages.get(j).unwrap();
-                    let test = format!("{page}|{tmp}");
-                    if rules_lines.contains(&test) {
-                        continue 'x;
-                    }
-                }
+            if is_correct_order(&pages, &rules) {
+                let mid = pages.get(pages.len() / 2).unwrap();
+                answer += mid;
             }
-
-            let mid = pages.get(pages.len() / 2).unwrap();
-            answer += mid;
         }
 
         Ok(answer)
     }
 
-    // TODO: Set the expected answer for the test input
     assert_eq!(143, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
     println!("Result = {result}");
+    // Result = 3608
     //endregion
 
     //region Part 2
-    /*
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        Ok(0)
+        let mut answer = 0;
+        let mut rules = vec![];
+        let mut pages_lines = vec![];
+        let mut reading_pages = false;
+
+        for line in reader.lines() {
+            let line = line?;
+
+            if line.trim().is_empty() {
+                reading_pages = true;
+            } else {
+                if reading_pages {
+                    pages_lines.push(line);
+                } else {
+                    rules.push(line);
+                }
+            }
+        }
+
+        for line in pages_lines {
+            let mut pages: Vec<usize> = line.split(',').map(|x| x.parse().unwrap()).collect();
+
+            if !is_correct_order(&pages, &rules) {
+                let mut swapped = true;
+
+                while swapped {
+                    swapped = false;
+                    for i in 0..pages.len() - 1 {
+                        let tmp = format!("{}|{}", pages[i + 1], pages[i]);
+                        if rules.contains(&tmp) {
+                            pages.swap(i, i + 1);
+                            swapped = true;
+                        }
+                    }
+                }
+
+                let mid = pages.get(pages.len() / 2).unwrap();
+                answer += mid;
+            }
+        }
+
+        Ok(answer)
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(123, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
-    */
+    // Result = 4922
     //endregion
 
     Ok(())
 }
 
-fn is_correct() {
-    todo!();
+fn is_correct_order(pages: &[usize], rules: &[String]) -> bool {
+    for (i, page) in pages.iter().enumerate() {
+        for j in 0..i {
+            let tmp = pages.get(j).unwrap();
+            let test = format!("{page}|{tmp}");
+            if rules.contains(&&test) {
+                return false;
+            }
+        }
+    }
+    true
 }
