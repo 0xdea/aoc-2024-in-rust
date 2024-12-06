@@ -1,7 +1,13 @@
 [package]
-name = "adv-code-2024"
+name = "aoc-2024-in-rust"
 version = "0.1.0"
 edition = "2021"
+description = "My solutions to Advent of Code 2024 in Rust."
+homepage = "https://adventofcode.com/"
+repository = "https://github.com/0xdea/aoc-2024-in-rust"
+license = "MIT"
+keywords = ["advent-of-code", "aoc", "aoc-2024", "aoc-2024-in-rust"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.93"

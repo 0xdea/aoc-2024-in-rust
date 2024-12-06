@@ -1,5 +1,5 @@
-use adv_code_2024::*;
 use anyhow::*;
+use aoc_2024_in_rust::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
 use regex::Regex;

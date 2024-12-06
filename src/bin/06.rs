@@ -1,5 +1,5 @@
-use adv_code_2024::*;
 use anyhow::*;
+use aoc_2024_in_rust::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
 use std::collections::HashSet;
@@ -186,8 +186,8 @@ fn color_path(mut input: Vec<Vec<char>>) -> Option<usize> {
                 dir = dir.turn_right();
             }
             c if c != 'X' => {
-                count += 1;
                 input[pos.y as usize][pos.x as usize] = 'X';
+                count += 1;
             }
             _ => (),
         }
