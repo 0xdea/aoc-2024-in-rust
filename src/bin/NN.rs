@@ -19,7 +19,8 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let mut answer = 0;
+        let mut answer = reader.lines().count();
+        answer += 1;
 
         // TODO: Solve Part 1 of the puzzle
         Ok(answer)
