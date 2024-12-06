@@ -39,7 +39,9 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        Ok(0)
+        let mut answer = 0;
+
+        Ok(answer)
     }
 
     assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);

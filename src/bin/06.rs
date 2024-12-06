@@ -104,19 +104,23 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    /*
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        Ok(0)
+        let mut answer = 1;
+
+        let mut input = parse_input(reader);
+        let xlen = input[0].len();
+        let ylen = input.len();
+
+        Ok(answer)
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(6, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
-    */
     //endregion
 
     Ok(())
