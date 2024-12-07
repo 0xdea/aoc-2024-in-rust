@@ -30,39 +30,34 @@ fn main() -> Result<()> {
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
 
-        let operators = &['+', '*'];
-
         for line in reader.lines() {
             let line = line?;
-
-            let parts = line.split(':').collect_vec();
+            let parts: Vec<_> = line.split(':').collect();
             assert_eq!(parts.len(), 2);
 
-            let exp_res: usize = parts[0].parse().unwrap();
+            let result: usize = parts[0].parse()?;
             let operands: Vec<usize> = parts[1]
-                .trim()
                 .split_whitespace()
                 .map(|s| s.parse().unwrap())
                 .collect();
 
-            let perms = permutations(operators, operands.len() - 1);
-
+            let perms = calculate_permutations(&['+', '*'], operands.len() - 1);
             for perm in perms {
-                let mut res = operands.first().unwrap().to_owned();
+                let mut res = *operands.first().unwrap();
 
                 for (i, operand) in operands[1..].iter().enumerate() {
-                    if res > exp_res {
+                    if res > result {
                         break;
                     }
 
                     match perm.chars().nth(i) {
                         Some('+') => res += operand,
                         Some('*') => res *= operand,
-                        c => panic!("{c:?}"),
+                        _ => panic!(),
                     }
                 }
 
-                if res == exp_res {
+                if res == result {
                     answer += res;
                     break;
                 }
@@ -72,7 +67,6 @@ fn main() -> Result<()> {
         Ok(answer)
     }
 
-    // TODO: Set the expected answer for the test input
     assert_eq!(3749, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
@@ -87,40 +81,35 @@ fn main() -> Result<()> {
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
 
-        let operators = &['+', '*', '|'];
-
         for line in reader.lines() {
             let line = line?;
-
-            let parts = line.split(':').collect_vec();
+            let parts: Vec<_> = line.split(':').collect();
             assert_eq!(parts.len(), 2);
 
-            let exp_res: usize = parts[0].parse().unwrap();
+            let result: usize = parts[0].parse()?;
             let operands: Vec<usize> = parts[1]
-                .trim()
                 .split_whitespace()
                 .map(|s| s.parse().unwrap())
                 .collect();
 
-            let perms = permutations(operators, operands.len() - 1);
-
+            let perms = calculate_permutations(&['+', '*', '|'], operands.len() - 1);
             for perm in perms {
-                let mut res = operands.first().unwrap().to_owned();
+                let mut res = *operands.first().unwrap();
 
                 for (i, operand) in operands[1..].iter().enumerate() {
-                    if res > exp_res {
+                    if res > result {
                         break;
                     }
 
                     match perm.chars().nth(i) {
                         Some('+') => res += operand,
                         Some('*') => res *= operand,
-                        Some('|') => res = format!("{}{}", res, operand).parse().unwrap(),
-                        c => panic!("{c:?}"),
+                        Some('|') => res = format!("{res}{operand}").parse()?,
+                        _ => panic!(),
                     }
                 }
 
-                if res == exp_res {
+                if res == result {
                     answer += res;
                     break;
                 }
@@ -141,9 +130,9 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn permutations(symbols: &[char], length: usize) -> Vec<String> {
-    std::iter::repeat(symbols.iter())
-        .take(length)
+fn calculate_permutations(chars: &[char], len: usize) -> Vec<String> {
+    std::iter::repeat(chars.iter())
+        .take(len)
         .multi_cartesian_product()
         .map(|v| v.into_iter().collect())
         .collect()
