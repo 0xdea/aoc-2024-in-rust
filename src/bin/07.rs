@@ -35,20 +35,23 @@ fn main() -> Result<()> {
         for line in reader.lines() {
             let line = line?;
 
-            let v: Vec<usize> = line
-                .replace(":", "")
+            let parts = line.split(':').collect_vec();
+            assert_eq!(parts.len(), 2);
+
+            let exp_res: usize = parts[0].parse().unwrap();
+            let operands: Vec<usize> = parts[1]
+                .trim()
                 .split_whitespace()
                 .map(|s| s.parse().unwrap())
                 .collect();
 
-            let operators_num = v.len() - 2;
-            let perms = permutations(operators, operators_num);
+            let perms = permutations(operators, operands.len() - 1);
 
             for perm in perms {
-                let mut res = *&v[1..].first().unwrap().to_owned();
+                let mut res = operands.first().unwrap().to_owned();
 
-                for (i, operand) in v[1..].iter().enumerate().clone() {
-                    if res > *v.first().unwrap() {
+                for (i, operand) in operands[1..].iter().enumerate() {
+                    if res > exp_res {
                         break;
                     }
 
@@ -59,7 +62,7 @@ fn main() -> Result<()> {
                     }
                 }
 
-                if res == *v.first().unwrap() {
+                if res == exp_res {
                     answer += res;
                     break;
                 }
@@ -70,7 +73,7 @@ fn main() -> Result<()> {
     }
 
     // TODO: Set the expected answer for the test input
-    assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(3749, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
