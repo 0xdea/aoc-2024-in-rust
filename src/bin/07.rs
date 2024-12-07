@@ -78,24 +78,64 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
     println!("Result = {result}");
+    // Result = 850435817339
     //endregion
 
     //region Part 2
-    /*
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
         let mut answer = 0;
 
+        let operators = &['+', '*', '|'];
+
+        for line in reader.lines() {
+            let line = line?;
+
+            let parts = line.split(':').collect_vec();
+            assert_eq!(parts.len(), 2);
+
+            let exp_res: usize = parts[0].parse().unwrap();
+            let operands: Vec<usize> = parts[1]
+                .trim()
+                .split_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect();
+
+            let perms = permutations(operators, operands.len() - 1);
+
+            for perm in perms {
+                let mut res = operands.first().unwrap().to_owned();
+
+                for (i, operand) in operands[1..].iter().enumerate() {
+                    if res > exp_res {
+                        break;
+                    }
+
+                    match perm.chars().nth(i) {
+                        Some('+') => res += operand,
+                        Some('*') => res *= operand,
+                        Some('|') => res = format!("{}{}", res, operand).parse().unwrap(),
+                        c => panic!("{c:?}"),
+                    }
+                }
+
+                if res == exp_res {
+                    answer += res;
+                    break;
+                }
+            }
+        }
+
         Ok(answer)
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(11387, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
-    */
+    // Result = 104824810233437
     //endregion
 
     Ok(())
