@@ -89,13 +89,50 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    /*
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let mut answer = 0;
+        let mut antennas: Vec<Antenna> = Vec::new();
+        let mut antinodes = HashSet::new();
 
-        Ok(answer)
+        let input = parse_input(reader);
+        let xlen = input[0].len() as i32;
+        let ylen = input.len() as i32;
+
+        for x in 0..xlen {
+            for y in 0..ylen {
+                let freq = input[y as usize][x as usize];
+                if freq != '#' && freq != '.' {
+                    antennas.push(Antenna::new(freq, x, y));
+                }
+            }
+        }
+
+        for i in 0..antennas.len() {
+            for j in 0..antennas.len() {
+                if i == j || antennas[i].freq != antennas[j].freq {
+                    continue;
+                }
+                let Antenna { x: x1, y: y1, .. } = antennas[i];
+                let Antenna { x: x2, y: y2, .. } = antennas[j];
+                let (xdiff, ydiff) = (x2 - x1, y2 - y1);
+
+                let mut m = 0;
+
+                loop {
+                    let (xpos, ypos) = (x1 - xdiff * m, y1 - ydiff * m);
+
+                    if xpos >= 0 && xpos < xlen && ypos >= 0 && ypos < ylen {
+                        antinodes.insert((xpos, ypos));
+                        m += 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        Ok(antinodes.len())
     }
 
     assert_eq!(34, part2(BufReader::new(TEST.as_bytes()))?);
@@ -103,7 +140,7 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
-    */
+    // Result = 1200
     //endregion
 
     Ok(())
