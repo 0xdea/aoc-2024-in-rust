@@ -118,12 +118,12 @@ fn main() -> Result<()> {
                 if i == j || antennas[i].freq != antennas[j].freq {
                     continue;
                 }
+
                 let Antenna { x: x1, y: y1, .. } = antennas[i];
                 let Antenna { x: x2, y: y2, .. } = antennas[j];
                 let (xdiff, ydiff) = (x2 - x1, y2 - y1);
 
                 let mut m = 0;
-
                 loop {
                     let (xpos, ypos) = (x1 - xdiff * m, y1 - ydiff * m);
 
