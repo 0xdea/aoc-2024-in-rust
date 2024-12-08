@@ -48,17 +48,18 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let mut antennas: Vec<Antenna> = Vec::new();
+        let mut antennas = Vec::new();
         let mut antinodes = HashSet::new();
 
         let input = parse_input(reader);
         let xlen = input[0].len() as i32;
         let ylen = input.len() as i32;
+        let in_bounds = |x, y| x >= 0 && x < xlen && y >= 0 && y < ylen;
 
         for x in 0..xlen {
             for y in 0..ylen {
                 let freq = input[y as usize][x as usize];
-                if freq != '#' && freq != '.' {
+                if freq.is_alphanumeric() {
                     antennas.push(Antenna::new(freq, x, y));
                 }
             }
@@ -76,7 +77,7 @@ fn main() -> Result<()> {
 
                 let (xpos, ypos) = (x1 - xdiff, y1 - ydiff);
 
-                if xpos >= 0 && xpos < xlen && ypos >= 0 && ypos < ylen {
+                if in_bounds(xpos, ypos) {
                     antinodes.insert((xpos, ypos));
                 }
             }
@@ -97,17 +98,18 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let mut antennas: Vec<Antenna> = Vec::new();
+        let mut antennas = Vec::new();
         let mut antinodes = HashSet::new();
 
         let input = parse_input(reader);
         let xlen = input[0].len() as i32;
         let ylen = input.len() as i32;
+        let in_bounds = |x, y| x >= 0 && x < xlen && y >= 0 && y < ylen;
 
         for x in 0..xlen {
             for y in 0..ylen {
                 let freq = input[y as usize][x as usize];
-                if freq != '#' && freq != '.' {
+                if freq.is_alphanumeric() {
                     antennas.push(Antenna::new(freq, x, y));
                 }
             }
@@ -127,7 +129,7 @@ fn main() -> Result<()> {
                 loop {
                     let (xpos, ypos) = (x1 - xdiff * m, y1 - ydiff * m);
 
-                    if xpos >= 0 && xpos < xlen && ypos >= 0 && ypos < ylen {
+                    if in_bounds(xpos, ypos) {
                         antinodes.insert((xpos, ypos));
                         m += 1;
                     } else {
