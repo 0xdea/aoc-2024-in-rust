@@ -31,11 +31,16 @@ struct Antenna {
 }
 
 impl Antenna {
-    fn new(freq: char, x: i32, y: i32) -> Self {
+    const fn new(freq: char, x: i32, y: i32) -> Self {
         Self { freq, x, y }
     }
 }
 
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss
+)]
 fn main() -> Result<()> {
     start_day(DAY);
 
