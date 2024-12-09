@@ -53,6 +53,10 @@ fn main() -> Result<()> {
         let disk = Disk::new(reader);
         dbg!(&disk);
 
+        disk.0.keys().filter(|k| **)
+
+        for ()
+
         Ok(0)
     }
 
