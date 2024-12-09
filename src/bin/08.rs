@@ -52,12 +52,13 @@ fn main() -> Result<()> {
         let mut antinodes = HashSet::new();
 
         let input = parse_input(reader);
-        let xlen = input[0].len() as i32;
-        let ylen = input.len() as i32;
-        let in_bounds = |x, y| x >= 0 && x < xlen && y >= 0 && y < ylen;
+        let width = input[0].len() as i32;
+        let height = input.len() as i32;
+        let within_bounds = |x, y| x >= 0 && x < width && y >= 0 && y < height;
 
-        for x in 0..xlen {
-            for y in 0..ylen {
+        // Find antennas
+        for x in 0..width {
+            for y in 0..height {
                 let freq = input[y as usize][x as usize];
                 if freq.is_alphanumeric() {
                     antennas.push(Antenna::new(freq, x, y));
@@ -65,6 +66,7 @@ fn main() -> Result<()> {
             }
         }
 
+        // Find antinodes
         for i in 0..antennas.len() {
             for j in 0..antennas.len() {
                 if i == j || antennas[i].freq != antennas[j].freq {
@@ -73,11 +75,10 @@ fn main() -> Result<()> {
 
                 let Antenna { x: x1, y: y1, .. } = antennas[i];
                 let Antenna { x: x2, y: y2, .. } = antennas[j];
-                let (xdiff, ydiff) = (x2 - x1, y2 - y1);
 
-                let (xpos, ypos) = (x1 - xdiff, y1 - ydiff);
-
-                if in_bounds(xpos, ypos) {
+                let (xdelta, ydelta) = (x2 - x1, y2 - y1);
+                let (xpos, ypos) = (x1 - xdelta, y1 - ydelta);
+                if within_bounds(xpos, ypos) {
                     antinodes.insert((xpos, ypos));
                 }
             }
@@ -102,12 +103,13 @@ fn main() -> Result<()> {
         let mut antinodes = HashSet::new();
 
         let input = parse_input(reader);
-        let xlen = input[0].len() as i32;
-        let ylen = input.len() as i32;
-        let in_bounds = |x, y| x >= 0 && x < xlen && y >= 0 && y < ylen;
+        let width = input[0].len() as i32;
+        let height = input.len() as i32;
+        let within_bounds = |x, y| x >= 0 && x < width && y >= 0 && y < height;
 
-        for x in 0..xlen {
-            for y in 0..ylen {
+        // Find antennas
+        for x in 0..width {
+            for y in 0..height {
                 let freq = input[y as usize][x as usize];
                 if freq.is_alphanumeric() {
                     antennas.push(Antenna::new(freq, x, y));
@@ -115,6 +117,7 @@ fn main() -> Result<()> {
             }
         }
 
+        // Find antinodes
         for i in 0..antennas.len() {
             for j in 0..antennas.len() {
                 if i == j || antennas[i].freq != antennas[j].freq {
@@ -123,15 +126,14 @@ fn main() -> Result<()> {
 
                 let Antenna { x: x1, y: y1, .. } = antennas[i];
                 let Antenna { x: x2, y: y2, .. } = antennas[j];
-                let (xdiff, ydiff) = (x2 - x1, y2 - y1);
 
-                let mut m = 0;
+                let (xdelta, ydelta) = (x2 - x1, y2 - y1);
+                let mut multiplier = 0;
                 loop {
-                    let (xpos, ypos) = (x1 - xdiff * m, y1 - ydiff * m);
-
-                    if in_bounds(xpos, ypos) {
+                    let (xpos, ypos) = (x1 - xdelta * multiplier, y1 - ydelta * multiplier);
+                    if within_bounds(xpos, ypos) {
                         antinodes.insert((xpos, ypos));
-                        m += 1;
+                        multiplier += 1;
                     } else {
                         break;
                     }
