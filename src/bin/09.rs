@@ -13,9 +13,34 @@ const TEST: &str = "\
 2333133121414131402
 ";
 
-struct MyFile {
-    size: usize,
-    id: i32,
+#[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
+enum Block {
+    FileId(i32),
+    Free,
+}
+
+#[derive(Debug)]
+struct Disk(BTreeMap<i32, Block>);
+
+impl Disk {
+    fn new<R: BufRead>(mut reader: R) -> Self {
+        let mut disk = BTreeMap::new();
+
+        let mut buf = String::new();
+        reader.read_line(&mut buf);
+
+        for (i, c) in buf.trim().chars().enumerate() {
+            let size = c.to_digit(10).unwrap() as i32;
+
+            if i % 2 == 0 {
+                disk.insert(size, Block::FileId(i as i32 / 2));
+            } else {
+                disk.insert(size, Block::Free);
+            }
+        }
+
+        Self(disk)
+    }
 }
 
 fn main() -> Result<()> {
@@ -25,43 +50,13 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(mut reader: R) -> Result<usize> {
-        let mut input = String::new();
-        reader.read_line(&mut input);
+        let disk = Disk::new(reader);
+        dbg!(&disk);
 
-        let mut used = BTreeMap::new();
-        let mut free = BTreeMap::new();
-        let mut pos = 0;
-
-        for (i, c) in input.chars().enumerate() {
-            let size = c.to_digit(10).unwrap() as i32;
-            if size == 0 {
-                continue;
-            }
-
-            if i % 2 == 0 {
-                used.insert(pos, i);
-            } else {
-                free.insert(c, i);
-            }
-
-            dbg!(&used);
-            dbg!(&free);
-
-            let v = if i % 2 == 0 {
-                fid += 1;
-                fid - 1
-            } else {
-                -1
-            };
-            fs1.extend((0..b - b'0').map(|_| (1, v)));
-            fs2.push(((b - b'0') as usize, v));
-        }
-
-        Ok(answer)
+        Ok(0)
     }
 
-    // TODO: Set the expected answer for the test input
-    assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(1928, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
