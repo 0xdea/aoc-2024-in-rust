@@ -72,21 +72,18 @@ fn main() -> Result<()> {
     fn part1<R: BufRead>(mut reader: R) -> Result<usize> {
         // Process input disk
         let mut blocks = Blocks::new(&mut reader);
+        // dbg!(&blocks);
 
         // Defrag input disk
-        let mut i = 0;
-        let mut j = blocks.len() - 1;
-        while i < j {
-            if blocks.get(i).unwrap().is_some() {
-                i += 1;
+        let mut left = 0;
+        let mut right = blocks.len() - 1;
+        while left < right {
+            if blocks[left].is_some() {
+                left += 1;
+            } else if blocks[right].is_none() {
+                right -= 1;
             } else {
-                *blocks.get_mut(i).unwrap() = blocks.remove(j);
-                j = blocks
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .find_map(|(idx, block)| block.map(|_| idx))
-                    .unwrap_or_default();
+                blocks.swap(left, right);
             }
         }
 
@@ -110,6 +107,14 @@ fn main() -> Result<()> {
         let mut blocks = Blocks::new(&mut reader);
         // dbg!(&blocks);
 
+        let v = blocks
+            .iter()
+            .map_while(|&block| block)
+            .enumerate()
+            .collect::<Vec<_>>();
+        dbg!(v);
+
+        /*
         // Defrag input disk
         let mut i = 0;
         let mut j = blocks.len() - 1;
@@ -126,12 +131,13 @@ fn main() -> Result<()> {
                     .unwrap_or_default();
             }
         }
+         */
 
         // Calculate checksum
         Ok(blocks.checksum())
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(2858, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
