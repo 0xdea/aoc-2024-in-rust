@@ -4,6 +4,7 @@ use code_timing_macros::time_snippet;
 use const_format::concatcp;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::ops::{Deref, DerefMut};
 
 const DAY: &str = "09";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
@@ -16,6 +17,20 @@ type Block = Option<i32>;
 
 #[derive(Debug)]
 struct Blocks(Vec<Block>);
+
+impl Deref for Blocks {
+    type Target = Vec<Block>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Blocks {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
 
 #[allow(
     clippy::cast_possible_truncation,
@@ -39,29 +54,9 @@ impl Blocks {
         Self(blocks)
     }
 
-    fn get(&self, index: usize) -> Option<Block> {
-        self.0.get(index).copied()
-    }
-
-    fn get_mut(&mut self, index: usize) -> Option<&mut Block> {
-        self.0.get_mut(index)
-    }
-
-    fn remove(&mut self, index: usize) -> Block {
-        self.0.remove(index)
-    }
-
-    fn iter(&self) -> impl DoubleEndedIterator<Item = Block> + ExactSizeIterator + '_ {
-        self.0.iter().copied()
-    }
-
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-
     fn checksum(&self) -> usize {
         self.iter()
-            .map_while(|block| block)
+            .map_while(|&block| block)
             .enumerate()
             .map(|(i, id)| i * id as usize)
             .sum()
