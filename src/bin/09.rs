@@ -16,11 +16,11 @@ const TEST: &str = "\
 #[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
 enum Block {
     FileId(i32),
-    Free,
+    Free(i32),
 }
 
 #[derive(Debug)]
-struct Disk(BTreeMap<i32, Block>);
+struct Disk(BTreeMap<Block, i32>);
 
 impl Disk {
     fn new<R: BufRead>(mut reader: R) -> Self {
@@ -33,9 +33,9 @@ impl Disk {
             let size = c.to_digit(10).unwrap() as i32;
 
             if i % 2 == 0 {
-                disk.insert(size, Block::FileId(i as i32 / 2));
+                disk.insert(Block::FileId(i as i32 / 2), size);
             } else {
-                disk.insert(size, Block::Free);
+                disk.insert(Block::Free(i as i32 / 2), size);
             }
         }
 
