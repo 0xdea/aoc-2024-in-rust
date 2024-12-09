@@ -16,10 +16,10 @@ const TEST: &str = "\
 type Block = Option<i32>;
 
 #[derive(Debug)]
-struct Blocks(Vec<Block>);
+struct Blocks(Vec<(Block, i32)>);
 
 impl Deref for Blocks {
-    type Target = Vec<Block>;
+    type Target = Vec<(Block, i32)>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -47,7 +47,11 @@ impl Blocks {
         let mut blocks = vec![];
         for (i, c) in input.trim().chars().enumerate() {
             let size = c.to_digit(10).unwrap() as i32;
-            let block = if i % 2 == 0 { Some(i as i32 / 2) } else { None };
+            let block = if i % 2 == 0 {
+                (Some(i as i32 / 2), size)
+            } else {
+                (None, size)
+            };
             blocks.extend((0..size).map(|_| block));
         }
 
@@ -56,7 +60,7 @@ impl Blocks {
 
     fn checksum(&self) -> usize {
         self.iter()
-            .map_while(|&block| block)
+            .map_while(|&block| block.0)
             .enumerate()
             .map(|(i, id)| i * id as usize)
             .sum()
@@ -78,9 +82,9 @@ fn main() -> Result<()> {
         let mut left = 0;
         let mut right = blocks.len() - 1;
         while left < right {
-            if blocks[left].is_some() {
+            if blocks[left].0.is_some() {
                 left += 1;
-            } else if blocks[right].is_none() {
+            } else if blocks[right].0.is_none() {
                 right -= 1;
             } else {
                 blocks.swap(left, right);
@@ -107,28 +111,37 @@ fn main() -> Result<()> {
         let mut blocks = Blocks::new(&mut reader);
         // dbg!(&blocks);
 
-        let v = blocks
-            .iter()
-            .map_while(|&block| block)
-            .enumerate()
-            .collect::<Vec<_>>();
-        dbg!(v);
+        //let mut left = 0;
+        let mut right = blocks.len() - 1;
+
+        while right >= 2 {
+            for left in (1..right).step_by(2) {
+                println!("left = {left}");
+                let left_len = blocks[left].1;
+                let right_len = blocks[right].1;
+                if left_len >= right_len {
+                    blocks.swap(left, right);
+                    blocks[right].1 = right_len;
+                    blocks.insert(left, (None, 0));
+                    blocks.insert(left + 2, (None, left_len - right_len));
+                    right += 2;
+                    break;
+                }
+            }
+            right -= 2;
+            println!("right = {right}");
+        }
 
         /*
         // Defrag input disk
-        let mut i = 0;
-        let mut j = blocks.len() - 1;
-        while i < j {
-            if blocks.get(i).unwrap().is_some() {
-                i += 1;
+
+        while left < right {
+            if blocks[left].0.is_some() {
+                left += 1;
+            } else if blocks[right].0.is_none() {
+                right -= 1;
             } else {
-                *blocks.get_mut(i).unwrap() = blocks.remove(j);
-                j = blocks
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .find_map(|(idx, block)| block.map(|_| idx))
-                    .unwrap_or_default();
+                blocks.swap(left, right);
             }
         }
          */
