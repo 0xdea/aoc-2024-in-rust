@@ -28,10 +28,10 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let map = parse_input(reader);
+        let grid = parse_input(reader);
 
-        Ok(trailheads(&map)
-            .map(|(x, y)| reachable_peaks(&map, x, y, 0).len())
+        Ok(trailheads(&grid)
+            .map(|(x, y)| reachable_peaks(&grid, x, y, 0).len())
             .sum())
     }
 
@@ -47,10 +47,10 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let map = parse_input(reader);
+        let grid = parse_input(reader);
 
-        Ok(trailheads(&map)
-            .map(|(x, y)| unique_paths(&map, x, y, 0))
+        Ok(trailheads(&grid)
+            .map(|(x, y)| unique_paths(&grid, x, y, 0))
             .sum())
     }
 
@@ -59,11 +59,17 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
+    // Result = 1875
     //endregion
 
     Ok(())
 }
 
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss
+)]
 fn parse_input<R: BufRead>(reader: R) -> Vec<Vec<i32>> {
     reader
         .lines()
@@ -76,55 +82,69 @@ fn parse_input<R: BufRead>(reader: R) -> Vec<Vec<i32>> {
         .collect()
 }
 
-fn trailheads(map: &Vec<Vec<i32>>) -> impl Iterator<Item = (i32, i32)> + '_ {
-    let width = map[0].len() as i32;
-    let height = map.len() as i32;
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss
+)]
+fn trailheads(grid: &[Vec<i32>]) -> impl Iterator<Item = (i32, i32)> + '_ {
+    let width = grid[0].len() as i32;
+    let height = grid.len() as i32;
 
     (0..width)
         .cartesian_product(0..height)
-        .filter(|&(x, y)| map[y as usize][x as usize] == 0)
+        .filter(|&(x, y)| grid[y as usize][x as usize] == 0)
 }
 
-fn reachable_peaks(map: &Vec<Vec<i32>>, x: i32, y: i32, exp: i32) -> HashSet<(i32, i32)> {
-    let width = map[0].len() as i32;
-    let height = map.len() as i32;
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss
+)]
+fn reachable_peaks(grid: &[Vec<i32>], x: i32, y: i32, exp: i32) -> HashSet<(i32, i32)> {
+    let width = grid[0].len() as i32;
+    let height = grid.len() as i32;
     let within_bounds = |x, y, width, height| x >= 0 && y >= 0 && x < width && y < height;
 
-    if !within_bounds(x, y, width, height) || map[y as usize][x as usize] != exp {
+    if !within_bounds(x, y, width, height) || grid[y as usize][x as usize] != exp {
         return HashSet::new();
     }
 
-    if map[y as usize][x as usize] == 9 {
+    if grid[y as usize][x as usize] == 9 {
         return HashSet::from_iter([(x, y)]);
     }
 
-    let mut set = reachable_peaks(map, x - 1, y, exp + 1);
-    set.extend(reachable_peaks(map, x + 1, y, exp + 1));
-    set.extend(reachable_peaks(map, x, y - 1, exp + 1));
-    set.extend(reachable_peaks(map, x, y + 1, exp + 1));
+    let mut set = reachable_peaks(grid, x - 1, y, exp + 1);
+    set.extend(reachable_peaks(grid, x + 1, y, exp + 1));
+    set.extend(reachable_peaks(grid, x, y - 1, exp + 1));
+    set.extend(reachable_peaks(grid, x, y + 1, exp + 1));
 
     set
 }
 
-fn unique_paths(map: &Vec<Vec<i32>>, x: i32, y: i32, exp: i32) -> usize {
-    let mut count = 0;
-
-    let width = map[0].len() as i32;
-    let height = map.len() as i32;
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss
+)]
+fn unique_paths(grid: &[Vec<i32>], x: i32, y: i32, exp: i32) -> usize {
+    let width = grid[0].len() as i32;
+    let height = grid.len() as i32;
     let within_bounds = |x, y, width, height| x >= 0 && y >= 0 && x < width && y < height;
 
-    if !within_bounds(x, y, width, height) || map[y as usize][x as usize] != exp {
+    if !within_bounds(x, y, width, height) || grid[y as usize][x as usize] != exp {
         return 0;
     }
 
-    if map[y as usize][x as usize] == 9 {
+    if grid[y as usize][x as usize] == 9 {
         return 1;
     }
 
-    count += unique_paths(map, x - 1, y, exp + 1);
-    count += unique_paths(map, x + 1, y, exp + 1);
-    count += unique_paths(map, x, y - 1, exp + 1);
-    count += unique_paths(map, x, y + 1, exp + 1);
+    let mut count = 0;
+    count += unique_paths(grid, x - 1, y, exp + 1);
+    count += unique_paths(grid, x + 1, y, exp + 1);
+    count += unique_paths(grid, x, y - 1, exp + 1);
+    count += unique_paths(grid, x, y + 1, exp + 1);
 
     count
 }
