@@ -32,12 +32,6 @@ impl DerefMut for ExpandedBlocks {
     }
 }
 
-impl FromIterator<Option<i32>> for ExpandedBlocks {
-    fn from_iter<I: IntoIterator<Item = Option<i32>>>(iter: I) -> Self {
-        ExpandedBlocks(iter.into_iter().collect())
-    }
-}
-
 #[allow(
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
@@ -116,10 +110,7 @@ impl CompressedBlocks {
         self.iter()
             .flat_map(|(maybe_id, len)| vec![*maybe_id; *len as usize])
             .enumerate()
-            .map(|(i, maybe_id)| match maybe_id {
-                None => 0,
-                Some(id) => id as usize * i,
-            })
+            .map(|(i, maybe_id)| maybe_id.map_or(0, |id| i * id as usize))
             .sum()
     }
 }
@@ -133,7 +124,6 @@ fn main() -> Result<()> {
     fn part1<R: BufRead>(mut reader: R) -> Result<usize> {
         // Process input disk
         let mut blocks = ExpandedBlocks::new(&mut reader);
-        // dbg!(&blocks);
 
         // Defrag input disk
         let mut left = 0;
@@ -147,7 +137,6 @@ fn main() -> Result<()> {
                 blocks.swap(left, right);
             }
         }
-        dbg!(&blocks);
 
         // Calculate checksum
         Ok(blocks.checksum())
@@ -167,7 +156,6 @@ fn main() -> Result<()> {
     fn part2<R: BufRead>(mut reader: R) -> Result<usize> {
         // Process input disk
         let mut blocks = CompressedBlocks::new(&mut reader);
-        // dbg!(&blocks);
 
         let mut right = blocks.len() - 1;
 
@@ -186,7 +174,6 @@ fn main() -> Result<()> {
             }
             right -= 2;
         }
-        //dbg!(&blocks);
 
         // Calculate checksum
         Ok(blocks.checksum())
@@ -197,6 +184,7 @@ fn main() -> Result<()> {
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
+    // Result = 6415666220005
     //endregion
 
     Ok(())
