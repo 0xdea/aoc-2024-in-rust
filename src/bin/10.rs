@@ -44,21 +44,21 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    /*
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let mut answer = 0;
+        let map = parse_input(reader);
 
-        Ok(answer)
+        Ok(trailheads(&map)
+            .map(|(x, y)| unique_paths(&map, x, y, 0))
+            .sum())
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(81, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
     println!("Result = {result}");
-    */
     //endregion
 
     Ok(())
@@ -104,4 +104,27 @@ fn reachable_peaks(map: &Vec<Vec<i32>>, x: i32, y: i32, exp: i32) -> HashSet<(i3
     set.extend(reachable_peaks(map, x, y + 1, exp + 1));
 
     set
+}
+
+fn unique_paths(map: &Vec<Vec<i32>>, x: i32, y: i32, exp: i32) -> usize {
+    let mut count = 0;
+
+    let width = map[0].len() as i32;
+    let height = map.len() as i32;
+    let within_bounds = |x, y, width, height| x >= 0 && y >= 0 && x < width && y < height;
+
+    if !within_bounds(x, y, width, height) || map[y as usize][x as usize] != exp {
+        return 0;
+    }
+
+    if map[y as usize][x as usize] == 9 {
+        return 1;
+    }
+
+    count += unique_paths(map, x - 1, y, exp + 1);
+    count += unique_paths(map, x + 1, y, exp + 1);
+    count += unique_paths(map, x, y - 1, exp + 1);
+    count += unique_paths(map, x, y + 1, exp + 1);
+
+    count
 }
