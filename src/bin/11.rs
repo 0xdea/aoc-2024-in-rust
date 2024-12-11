@@ -61,7 +61,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn parse_input<R: BufRead>(mut reader: R) -> HashMap<isize, usize> {
+fn parse_input<R: BufRead>(mut reader: R) -> HashMap<usize, usize> {
     let mut input = String::new();
     reader
         .read_line(&mut input)
@@ -73,7 +73,7 @@ fn parse_input<R: BufRead>(mut reader: R) -> HashMap<isize, usize> {
         .collect()
 }
 
-fn blink(stones: &HashMap<isize, usize>) -> HashMap<isize, usize> {
+fn blink(stones: &HashMap<usize, usize>) -> HashMap<usize, usize> {
     // Key = stone mark
     // Value = stone count
     let mut result = HashMap::new();
@@ -88,8 +88,8 @@ fn blink(stones: &HashMap<isize, usize>) -> HashMap<isize, usize> {
 
             // Replace the stone with two stones
             if digits % 2 == 0 {
-                *result.entry(mark % 10_isize.pow(digits / 2)).or_default() += count;
-                *result.entry(mark / 10_isize.pow(digits / 2)).or_default() += count;
+                *result.entry(mark % 10_usize.pow(digits / 2)).or_default() += count;
+                *result.entry(mark / 10_usize.pow(digits / 2)).or_default() += count;
 
             // Multiply mark by 2024
             } else {
