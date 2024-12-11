@@ -74,9 +74,15 @@ fn parse_input<R: BufRead>(mut reader: R) -> HashMap<usize, usize> {
 }
 
 fn blink(stones: &HashMap<usize, usize>) -> HashMap<usize, usize> {
-    // Key = stone mark
-    // Value = stone count
+    // key = stone mark; value = stone count
     let mut result = HashMap::new();
+
+    let split = |mark, digits| {
+        (
+            mark % 10_usize.pow(digits / 2),
+            mark / 10_usize.pow(digits / 2),
+        )
+    };
 
     for (mark, count) in stones {
         // Replace mark 0 with mark 1
@@ -84,12 +90,13 @@ fn blink(stones: &HashMap<usize, usize>) -> HashMap<usize, usize> {
             *result.entry(1).or_default() += count;
         } else {
             #[allow(clippy::cast_possible_truncation)]
-            let digits = format!("{}", *mark).len() as u32;
+            let digits = format!("{mark}").len() as u32;
 
             // Replace the stone with two stones
             if digits % 2 == 0 {
-                *result.entry(mark % 10_usize.pow(digits / 2)).or_default() += count;
-                *result.entry(mark / 10_usize.pow(digits / 2)).or_default() += count;
+                let (left, right) = split(mark, digits);
+                *result.entry(left).or_default() += count;
+                *result.entry(right).or_default() += count;
 
             // Multiply mark by 2024
             } else {
