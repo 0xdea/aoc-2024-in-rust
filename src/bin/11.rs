@@ -77,26 +77,19 @@ fn blink(stones: &HashMap<usize, usize>) -> HashMap<usize, usize> {
     // key = stone mark; value = stone count
     let mut result = HashMap::new();
 
-    let split = |mark, digits| {
-        (
-            mark % 10_usize.pow(digits / 2),
-            mark / 10_usize.pow(digits / 2),
-        )
-    };
-
     for (mark, count) in stones {
         // Replace mark 0 with mark 1
         if *mark == 0 {
             *result.entry(1).or_default() += count;
         } else {
-            #[allow(clippy::cast_possible_truncation)]
-            let digits = format!("{mark}").len() as u32;
+            let s = mark.to_string();
+            let len = s.len();
 
             // Replace the stone with two stones
-            if digits % 2 == 0 {
-                let (left, right) = split(mark, digits);
-                *result.entry(left).or_default() += count;
-                *result.entry(right).or_default() += count;
+            if len % 2 == 0 {
+                let (left, right) = s.split_at(len / 2);
+                *result.entry(left.parse().unwrap()).or_default() += count;
+                *result.entry(right.parse().unwrap()).or_default() += count;
 
             // Multiply mark by 2024
             } else {
