@@ -18,6 +18,9 @@ const_format = "0.2.33"
 itertools = "0.13.0"
 regex = "1.11.1"
 
+# Additional dependencies
+glam = "0.29.2"
+
 [lints.clippy]
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }

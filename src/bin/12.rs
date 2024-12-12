@@ -2,15 +2,40 @@ use anyhow::*;
 use aoc_2024_in_rust::*;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
+use glam::IVec2;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 const DAY: &str = "12";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 
-const TEST: &str = "\
-<TEST-INPUT>
-"; // TODO: Add the test input
+const TEST1: &str = "\
+AAAA
+BBCD
+BBCC
+EEEC
+";
+
+const TEST2: &str = "\
+OOOOO
+OXOXO
+OOOOO
+OXOXO
+OOOOO
+";
+
+const TEST3: &str = "\
+RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE
+";
 
 fn main() -> Result<()> {
     start_day(DAY);
@@ -26,8 +51,9 @@ fn main() -> Result<()> {
         Ok(answer)
     }
 
-    // TODO: Set the expected answer for the test input
-    assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(140, part1(BufReader::new(TEST1.as_bytes()))?);
+    assert_eq!(772, part1(BufReader::new(TEST2.as_bytes()))?);
+    assert_eq!(1930, part1(BufReader::new(TEST3.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
